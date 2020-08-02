@@ -251,5 +251,21 @@ svg.append("text")
         .style("font-size", "18px")         
         .style("fill", "black")
         .html("https://flunky.github.io/cars2017.csv");
+svg.append("ellipse")
+        .attr("cx", 300)
+        .attr("cy", 80)
+        .attr("rx", 200)
+        .attr("ry", 50)
+        .attr('stroke', 'lightgreen')
+        .attr("fill", "none")
+        .attr("transform", "rotate(30)");;
+svg.append("text")
+        .attr("x", 300)             
+        .attr("y",130)
+        .attr("text-anchor", "middle")  
+        .style("font-size", "18px") 
+        .style("text-decoration", "underline")  
+        .style("fill", "lightgreen")
+        .text("Typically Higher City MPG");
 })
 </script>
