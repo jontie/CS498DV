@@ -3,8 +3,7 @@
 <script src="https://d3js.org/d3.v4.js"></script>
 
 <div>
-<button type="button"name="bkBtn">Back</button>
-<button type="button"name="fwBtn">Forward</button>
+<button onclick="loadPage()" type="button"name="rsBtn">Next Scene</button>
 </div>
 <div id="cars_Final"></div>
 <style>
@@ -13,7 +12,11 @@
 </style>
 
 <script>
-
+    
+function loadPage(){
+    window.open(
+      'https://jontie.github.io/CS498DV/index2.html', '_self');
+}
 var margin = {top: 10, right: 10, bottom: 40, left: 10},
     width = 520 - margin.left - margin.right,
     height = 520 - margin.top - margin.bottom;
