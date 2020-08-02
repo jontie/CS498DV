@@ -1,0 +1,227 @@
+<html>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<div>
+<button type="button"name="bkBtn">Back</button>
+<button type="button"name="fwBtn">Forward</button>
+</div>
+<div id="cars_Final"></div>
+<style>
+.bubbles {stroke-width: 2px;  stroke: white;}
+.bubbles:hover {stroke: black;}
+</style>
+
+<script>
+
+var margin = {top: 10, right: 10, bottom: 40, left: 10},
+    width = 520 - margin.left - margin.right,
+    height = 520 - margin.top - margin.bottom;
+
+var svg = d3.select("#cars_Final")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right + 500)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")")
+
+svg
+  .append("rect")
+    .attr("x",0)
+    .attr("y",0)
+    .attr("height", height)
+    .attr("width", height)
+    .style("fill", "gray")
+var desc = svg
+  .append("rect")
+    .attr("x",500)
+    .attr("y",0)
+    .attr("height", height)
+    .attr("width", 300)
+    .attr('stroke', 'black')
+    .style("fill", "none");
+
+//Read data
+d3.csv("https://flunky.github.io/cars2017.csv", function(data) {
+
+  var x = d3.scaleLog()
+    .domain([5,150])
+    .range([0, width - 100]);  
+
+  var y = d3.scaleLog()
+        .domain([10, 150])
+        .range([height - 100, 0])
+        .nice();
+
+svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", margin.left + 200)
+  .attr("y", height + margin.top + 10)
+  .style("fill", "orange")
+  .style("font-size", "18px")
+  .text("Diesel");
+svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", margin.left + 375)
+  .attr("y", height + margin.top + 10)
+  .style("fill", "green")
+  .style("font-size", "18px")
+  .text("Electric");
+svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("y",  height + margin.top + 10)
+  .attr("x", margin.left + 75)
+  .style("fill", "blue")
+  .style("font-size", "18px") 
+  .text("Gasoline")
+
+var color = d3.scaleOrdinal()
+  .domain(["AverageCityMPG", "AverageHighwayMPG", "AverageCityMPG" ])
+  .range([ "orange", "green", "blue"])
+
+var tooltip = d3.select("#cars_Final")
+  .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "gray")
+    .style("font-size", "18px") 
+    .style("color", "white")
+
+var showTooltip = function(d) {
+    tooltip
+      .transition()
+      .duration(200)
+    tooltip
+      .style("opacity", 1)
+      .html("Make: " + d.Make+ " <br/>" + "Fuel: " + d.Fuel + " <br/>" + "City MPG: " + d.AverageCityMPG + 
+            " <br/>" + "Highway MPG: " + d.AverageHighwayMPG + " <br/>" + "Number of cyliders: " + 
+            d.EngineCylinders)
+      
+}
+var moveTooltip = function(d) {tooltip}
+var hideTooltip = function(d) {
+  tooltip
+    .transition()
+    .duration(200)
+    .style("opacity", 0)
+}
+var node = svg.append('g')
+  .selectAll("bubble")
+  .data(data)
+  .enter()
+  .append("circle")
+    .attr("class", "bubbles")
+    .attr("cx", function (d) { if (d.Fuel == "Gasoline") {return x(Math.random() * (5) + 6)}
+           else 	{return x(d.AverageCityMPG)}; } )
+    .attr("cy", function (d) { return y(d.AverageHighwayMPG); } )
+    .attr("r",function(d) { return 5 ; })
+    .style("fill", function (d) { return color(d.Fuel) } )
+    .on("mouseover", showTooltip )
+    .on("mousemove", moveTooltip )
+    .on("mouseleave", hideTooltip )
+
+var forceSim= d3.forceSimulation()
+    .force("center", d3.forceCenter().y(height / 2)) 
+    .force("charge", d3.forceManyBody().strength(1)) 
+    .force("collide", d3.forceCollide().strength(.03).radius(20)) 
+
+forceSim
+    .nodes(data)
+    .on("tick", function(d){
+      node
+      .attr("cy", function(d){ return d.y; })
+});
+
+svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 + (20))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "18px") 
+        .style("text-decoration", "underline")  
+        .style("fill", "darkblue")
+        .text("Fuel Type Comparison");
+svg.append("text")
+        .attr("x", 650)             
+        .attr("y", 0 + (20))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "18px") 
+        .style("text-decoration", "underline")  
+        .style("fill", "black")
+        .text("Description");
+svg.append("text")
+        .attr("x", 520)             
+        .attr("y", 60)
+        .attr("text-anchor", "left")  
+        .style("font-size", "18px") 
+        .style("fill", "black")
+        .html("By comparison gasoline outnumbers");
+svg.append("text")
+        .attr("x", 520)             
+        .attr("y", 80)
+        .attr("text-anchor", "left")  
+        .style("font-size", "18px") 
+        .style("fill", "black")
+        .html("all other fuel types.");
+svg.append("text")
+        .attr("x", 520)             
+        .attr("y", 200)
+        .attr("text-anchor", "left")  
+        .style("font-size", "18px") 
+        .style("text-decoration", "underline")  
+        .style("fill", "blue")
+        .html("Gasoline: 130");
+svg.append("text")
+        .attr("x", 520)             
+        .attr("y", 220)
+        .attr("text-anchor", "left")  
+        .style("font-size", "18px") 
+        .style("text-decoration", "underline")  
+        .style("fill", "orange")
+        .html("Diesel: 6");
+svg.append("text")
+        .attr("x", 520)             
+        .attr("y", 240)
+        .attr("text-anchor", "left")  
+        .style("font-size", "18px") 
+        .style("text-decoration", "underline")  
+        .style("fill", "green")
+        .html("Electric: 10");
+svg.append("text")
+        .attr("x", 520)             
+        .attr("y", 430)
+        .attr("text-anchor", "left")  
+        .style("font-size", "18px")         
+        .style("fill", "black")
+        .html("Data From: ");
+svg.append("text")
+        .attr("x", 520)             
+        .attr("y", 450)
+        .attr("text-anchor", "left")  
+        .style("font-size", "18px")         
+        .style("fill", "black")
+        .html("https://flunky.github.io/cars2017.csv");
+
+svg.append('line')
+    .style("stroke", "blue")
+    .style("stroke-width", 2)
+    .attr("x1", 50)
+    .attr("y1", height /2)
+    .attr("x2",  margin.left + 40)
+    .attr("y2", height + margin.top); 
+svg.append('line')
+    .style("stroke", "orange")
+    .style("stroke-width", 2)
+    .attr("x1", 200)
+    .attr("y1", height /2)
+    .attr("x2",  margin.left + 180)
+    .attr("y2", height + margin.top); 
+svg.append('line')
+    .style("stroke", "green")
+    .style("stroke-width", 2)
+    .attr("x1", 370)
+    .attr("y1", height /2)
+    .attr("x2",  margin.left + 350)
+    .attr("y2", height + margin.top);
+})
+</script>
