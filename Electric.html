@@ -255,5 +255,20 @@ svg.append("text")
         .style("font-size", "18px")         
         .style("fill", "black")
         .html("https://flunky.github.io/cars2017.csv");
+  svg.append('line')
+    .style("stroke", "lightgreen")
+    .style("stroke-width", 2)
+    .attr("x1", 25)
+    .attr("y1", 100)
+    .attr("x2", 400)
+    .attr("y2", 120);
+svg.append("text")
+        .attr("x", (210))             
+        .attr("y",130)
+        .attr("text-anchor", "middle")  
+        .style("font-size", "18px") 
+        .style("text-decoration", "underline")  
+        .style("fill", "lightgreen")
+        .text("Typically Higher City MPG");
 })
 </script>
